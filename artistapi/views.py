@@ -11,13 +11,6 @@ import requests
 from .models import Artist, Album
 def index(request):
 	return HttpResponse("Hello world!")
-
-def allowOrigin(response):
-		#response["Access-Control-Allow-Origin"] = "*"
-		#response["Access-Control-Allow-Methods"] = "POST, GET, PUT"
-		#response["Access-Control-Max-Age"] = "1000"
-		#response["Access-Control-Allow-Headers"] = "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"
-		return response
 		
 def albums(request, artistId = None):
 	if request.method == "GET":
@@ -26,7 +19,7 @@ def albums(request, artistId = None):
 			if Artist.objects.filter(id=artistId).exists():
 				artists = [Artist.objects.get(id=artistId)]
 			else:
-				return allowOrigin(HttpResponseNotFound())
+				return HttpResponseNotFound()
 		if len(artists) == 0:
 			artists = Artist.objects.all()
 		result = []
@@ -36,27 +29,27 @@ def albums(request, artistId = None):
 			artist_dict["name"] = artist.name
 			artist_dict["albums"] = albums
 			result.append(artist_dict)
-		return allowOrigin(JsonResponse(result, safe=False))
-	return allowOrigin(JsonResponse({}))
+		return JsonResponse(result, safe=False)
+	return JsonResponse({})
 
 def artists(request):
 	if request.method == "GET":
 		artists = Artist.objects.all()
 		result = [{"name" : artist.name, "artistId" : artist.id} for artist in artists]
-		return allowOrigin(JsonResponse({"artists" : result}))
+		return JsonResponse({"artists" : result})
 		
 	if request.method == "PUT":
 		artist_name = request.body
 		#check if artist already exists
 		if(Artist.objects.filter(name=artist_name).exists()):
-			return allowOrigin(JsonResponse({"success": True, "status" : "Artist already added"}))
+			return JsonResponse({"success": True, "status" : "Artist already added"})
 
 		#request list of albums for this artist from iTunes search API
 		r = requests.get("https://itunes.apple.com/search", {"media" : "music", "entity" : "album", "attribute" : "artistTerm", "term" : artist_name, "limit" : 200});
 		response_json = r.json()
 		if(response_json["resultCount"] == 0):
 			#No albums for this artist :(
-			return allowOrigin(HttpResponseNotFound())
+			return HttpResponseNotFound()
 		
 		#Add artist entry to db
 		artist = Artist.objects.create(name=artist_name)
@@ -64,6 +57,6 @@ def artists(request):
 		for result in response_json["results"]:
 			#Add album entry to db
 			album = Album.objects.create(artist=artist, actualArtist=result["artistName"], name=result["collectionName"], date_released=result["releaseDate"], image=result["artworkUrl100"])
-		return allowOrigin(JsonResponse({"success": True, "status" : "All albums added"}))		
+		return JsonResponse({"success": True, "status" : "All albums added"})
 	#todo: add delete artist method
-	return allowOrigin(JsonResponse({}))
+	return JsonResponse({})
