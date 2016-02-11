@@ -1,0 +1,13 @@
+<div class="row marketing">
+	<p>Enter the name of an artist, and add all their albums to the list</p>
+	<form class="form-inline" ng-submit="addartist.addArtist()">
+		<div class="form-group">
+			<label for="artistName">Artist name: </label>
+			<input type="text" class="form-control" id="artistName" placeholder="Artist Name" ng-model="artistName" required>
+		</div>
+		<button type="submit" class="btn btn-primary">Add</button>
+	</form>
+	<p class="bg-success message" ng-show="submitted && success">All albums added. <a href="#/">Browse artists</a></p>
+	<p class="bg-warning message" ng-show="submitted && failed">Artist not found</p>
+	<p class="message" ng-show="adding">Adding...</p>
+</div>

@@ -1,0 +1,50 @@
+<div class="row">
+	<div class="col-md-3" id="artists_nav">
+		<h2> Artists </h2>
+		<ul class="nav nav-pills nav-stacked" id="artist_list">
+		<li ng-repeat="artist in artists" ng-class="{'active' : artist.artistId == currentArtistId}"><a ng-click="browse.showAlbums(artist.artistId)">{{artist.name}}</a></li>
+	</div>
+	<div class="col-md-9" id="albums_list">
+		<div>
+		<h2> Albums </h2>
+		
+		<!--Error messages and Loading...-->
+		<span ng-show='!albumLoading && !albumError && albums.length == 0' class='bg-warning message'>No albums for this artist</span>
+		<span ng-show='!albumLoading && albumError' class='bg-warning message'>Error loading albums. please <a href ng-click="browse.showAlbums(currentArtistId)">try again</a></span>
+		<span ng-show='albumLoading'>Loading albums... </span>
+		<!--Error messages and Loading...-->
+		
+		<div class="row" ng-show='albums.length > 0'>
+			<!--Search bar-->
+			<div class="form-group has-feedback">
+				<label class="control-label" for="inputSuccess2">Search</label>
+				<input type="text" class="form-control" id="search" ng-model="searchstring"/>
+				<span class="glyphicon glyphicon-search form-control-feedback"></span>
+			</div>
+			<!--Sorting options-->
+			Sort by: 
+			<a ng-click="browse.setOrder('release_date');">Date{{browse.getArrow('release_date')}}</a>
+			<a ng-click="browse.setOrder('name');">Name{{browse.getArrow('name')}}</a>
+		</div>
+		<!--Albums-->
+		<div class="row albuminfo" ng-repeat="album in albums | orderBy:order:reverse | filter : {name:searchstring}">
+			<div class="col-md-4">
+				<img ng-src={{album.image}}>
+			</div>
+			<p class="col-md-8">
+				<h4>{{album.name}}</h4>
+				<h6>{{album.actualArtist}}</h6>
+				<span>Released on: </span><span>{{album.release_date | date : mediumDate}}</span>
+			</p>
+		</div>
+		<!--Total found-->
+		<p ng-show="albums.length > 0"> Total found: {{(albums | filter : {name:searchstring}).length}} Albums</p>
+	</div>
+</div>
+<div class="row">
+	<div class='col-md-12'>
+	<span ng-show='!artistLoading && !artistError && artists.length == 0' class='bg-warning message'>No artists Yet! please <a ng-href="#/addartist">Add an Artist</a></span>
+	<span ng-show='!artistLoading && artistError' class='bg-warning message'>Error loading artists. please <a href ng-click="browse.getArtists()">try again</a></span>
+	<span ng-show='artistLoading'>Loading artists... </span>
+	</div>
+</div>
