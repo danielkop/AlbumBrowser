@@ -1,7 +1,9 @@
 #taken from: http://stackoverflow.com/questions/3719243/recommended-gitignore-file-for-python-projects
 #and: https://github.com/django/django/blob/master/.gitignore
 
+#project specific:
 settings_local.py
+db.sqlite3
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
